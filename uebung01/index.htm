@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="author" content="Tom Oberhauser">
+        <title>MME2 Uebung 1 - Videoplayer</title>
+        <link rel="stylesheet" type="text/css" href="css/app.css">
+        <script src="js/app.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div id="main">
+            <div id="videoPlayer">
+                <video id="video">
+                    <source src="http://techslides.com/demos/sample-videos/small.webm" type="video/webm"></source>
+                    <source src="http://techslides.com/demos/sample-videos/small.ogv" type="video/ogg"></source>
+                    <source src="http://techslides.com/demos/sample-videos/small.mp4" type="video/mp4"></source>
+                    Sorry, no video for you :(
+                </video>
+            </div>
+            <div id="videoControls">
+                <button id="btn-play" name="btn-play">PLAY</button>
+                <button id="btn-stop" name="btn-stop">STOP</button>
+                <button id="btn-fullscreen" name="btn-fullscreen">FULLSCREEN</button>
+                <input id="timeDisplay" type="text" readonly>
+                <input id="timeSlider" type="range" min="0.0" max="1.0" step="0.01" value="0.0">
+            </div>
+        </div>
+    </body>
+</html>
