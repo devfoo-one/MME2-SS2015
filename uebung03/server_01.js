@@ -1,1 +1,1 @@
-var express = require("express");var app = express();app.get('/', function(req, res){       res.send('Hello World');});app.listen(8080);
+var express = require("express");var app = express();app.get('/', function(req, res){       res.send('Hallo Welt');});// http://expressjs.com/starter/hello-world.htmlvar server = app.listen(8080, function() {    var host = server.address().address;    var port = server.address().port;    console.log('server listening at http://%s:%s', host, port);});
