@@ -1,0 +1,22 @@
+{
+  "name": "mme2-uebung_03",
+  "version": "1.0.0",
+  "description": "Uebung 03 für MME2 SS2015",
+  "main": "server_02.js",
+  "dependencies": {
+    "express": "^4.12.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devfoo-one/MME2-SS2015"
+  },
+  "author": "Tom Oberhauser",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/devfoo-one/MME2-SS2015/issues"
+  },
+  "homepage": "https://github.com/devfoo-one/MME2-SS2015",
+  "engines": {
+      "node": ">=0.10.0"
+  }
+}
