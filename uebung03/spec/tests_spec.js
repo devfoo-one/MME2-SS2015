@@ -3,7 +3,11 @@ var server = require('../src/server.js');
 frisby.create('basic hello world test')
     .get('http://localhost:8088')
         .expectBodyContains('Hallo Welt')
+        .expectStatus(200)
 .toss();
 
-//TODO: add more tests (header equals...)
-//TODO: test does not finish when run via `jasmine-node spec/`
+frisby.create('document server test')
+    .get('http://localhost:8080')
+        .expectStatus(200)
+        .expectHeaderContains('content-type', 'text/html')
+.toss();
