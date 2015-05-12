@@ -52,11 +52,15 @@ module.exports = function(grunt) {
         copy: {
             build: {
                 files: [{
-                       expand: true,
-                       cwd: 'src/public',
-                       src: ['**/*.js','**/*.htm','**/*.css'], //https://github.com/cbas/grunt-rev/issues/29
+                        expand: true,
+                        cwd: 'src/public',
+                        src: ['**/*.js','**/*.htm','**/*.css'], //https://github.com/cbas/grunt-rev/issues/29
                        //without file endings, grunt seems to interpret folders as files
-                       dest: 'build/public/'
+                        dest: 'build/public/'
+                },     {
+                        expand: true,
+                        src: 'package.json',
+                        dest: 'build/'
                 }]
             }
         }
