@@ -1,0 +1,23 @@
+{
+  "name": "uebung04",
+  "version": "1.0.0",
+  "description": "Excercise 04 of the module \"Multimedia-Engineering 2\"",
+  "main": "src/uebung04.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/uebung04.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devfoo-one/MME2-SS2015"
+  },
+  "author": "Tom Oberhauser",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/devfoo-one/MME2-SS2015/issues"
+  },
+  "homepage": "https://github.com/devfoo-one/MME2-SS2015",
+  "dependencies": {
+    "express": "^4.12.4"
+  }
+}
