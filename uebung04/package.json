@@ -4,7 +4,7 @@
   "description": "Excercise 04 of the module \"Multimedia-Engineering 2\"",
   "main": "src/uebung04.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jasmine-node spec/ --verbose",
     "start": "node src/uebung04.js"
   },
   "repository": {
@@ -20,5 +20,17 @@
   "dependencies": {
     "body-parser": "^1.12.4",
     "express": "^4.12.4"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "devDependencies": {
+    "frisby": "^0.8.5",
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-uglify": "^0.9.1",
+    "grunt-jasmine-node": "^0.3.1",
+    "jasmine-node": "^1.14.5"
   }
 }
