@@ -39,16 +39,12 @@ module.exports = {
     getById: function(id) {
         return _books[id];
     },
-    push: function(json) {
-        for (var x = 0; x < json.length; x++) {
-            if (checkObject(json[x]) === false) {
-                return false;
-            } //needed because the push must break if one element is not ok
+    push: function(obj) {
+        if (checkObject(obj)) {
+            _books.push(obj);
+            return true;
         }
-        for (var i = 0; i < json.length; i++) { // http://stackoverflow.com/questions/500504/why-is-using-for-in-with-array-iteration-such-a-bad-idea
-            _books.push(json[i]);
-        }
-        return true;
+        return false;
     },
     update: function(obj, id) {
         if (checkObject(obj)) {

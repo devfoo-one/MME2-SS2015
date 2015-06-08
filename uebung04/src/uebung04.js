@@ -11,6 +11,10 @@ var data = {
 var app = express();
 var routerV1 = express.Router();
 
+routerV1.route('').get(function(req, res) {
+    errorJSON.send(new errorJSON.Error("error", 404, "no entity requested"), res);
+});
+
 // route /entity
 routerV1.route('/:entity/')
 
