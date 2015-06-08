@@ -58,16 +58,23 @@ routerV1.route('/:entity/:id')
     .put(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
-        var postedObject = req.body;
-        res.send('PUT ' + entity + ' with ' + id); //TODO implement me
-        // TODO dont forget to send http success code here
+        var postedObject = req.body[0]; //get the first object out of HTTP request
+        if(data[entity].update(postedObject, id)) {
+            errorJSON.send(new errorJSON.Error("success", 200, "update of " + entity + " with id " + id + " successful"), res);
+        } else {
+            errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
+        }
     })
 
     // route /entity/id DELETE
     .delete(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
-        //TODO implement me
+        if(data[entity].delete(id)) {
+            errorJSON.send(new errorJSON.Error("success", 200, "deletion of " + entity + " with id " + id + " successful"), res);
+        } else {
+            errorJSON.send(new errorJSON.Error("error", 400, "No object to delete with id " + id + " found within entity " + entity), res);
+        }
     });
 
 // for parsing application/json

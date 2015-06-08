@@ -56,5 +56,12 @@ module.exports = {
             return true;
         }
         return false;
+    },
+    delete: function(id) {
+        if (_books[id] !== undefined) {
+            _books.splice(id, 1);
+            return true;
+        }
+        return false;
     }
 };
