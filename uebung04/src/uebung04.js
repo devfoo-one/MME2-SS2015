@@ -62,7 +62,7 @@ routerV1.route('/:entity/:id')
     .put(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
-        var postedObject = req.body[0]; //get the first object out of HTTP request
+        var postedObject = req.body;
         if(data[entity].update(postedObject, id)) {
             errorJSON.send(new errorJSON.Error("success", 200, "update of " + entity + " with id " + id + " successful"), res);
         } else {
