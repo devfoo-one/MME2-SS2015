@@ -38,7 +38,7 @@ paths:
         201:
           description: Book successful created
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/Book'
         400:
           description: Object not proper formatted
           schema:

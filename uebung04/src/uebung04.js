@@ -32,8 +32,9 @@ routerV1.route('/:entity/')
     .post(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var postedObject = req.body; //bodyParser middleware automatically parses application/json posts into JSON
-        if(data[entity].push(postedObject)) {
-            errorJSON.send(new errorJSON.Error("success", 201, "insert into " + entity + " successful"), res);
+        var insertedObject = data[entity].push(postedObject);
+        if(insertedObject) {
+            res.status(201).json(insertedObject);
         } else {
             errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
         }

@@ -24,7 +24,8 @@ frisby.create('Insert new book')
     .post('http://localhost:8080/api/v1/books/', {
         title: "This is the title",
         author: "this is the autor",
-        year: "2015"
+        year: "2015",
+        id: 3
     }, {
         json: true
     })
@@ -36,9 +37,9 @@ frisby.create('Insert new book')
     })
     .expectStatus(201)
     .expectJSON({
-        type: 'success',
-        statusCode: 201,
-        msg: 'insert into books successful'
+        title: 'This is the title',
+        author: 'this is the autor',
+        year: '2015'
     })
     .toss();
 
