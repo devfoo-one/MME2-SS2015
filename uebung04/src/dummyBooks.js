@@ -48,8 +48,12 @@ module.exports = {
     getById: function(id) {
         var _id = Number.parseInt(id);
         var retObj = _books[_id];
-        retObj.id = _id;
-        return retObj;
+        if (retObj) {
+            retObj.id = _id;
+            return retObj;
+        } else {
+            return false;
+        }
     },
     /**
      * Adds a book to the collection
@@ -59,7 +63,6 @@ module.exports = {
     push: function(obj) {
         if (checkObject(obj)) {
             _books.push(obj);
-            // return _books.length - 1; //simulate return of ID of inserted Object
             return this.getById(_books.length - 1);
         }
         return false;
@@ -71,9 +74,11 @@ module.exports = {
      * @return BookBoolean  success?
      */
     update: function(obj, id) {
+        var _id = Number.parseInt(id);
         if (checkObject(obj)) {
-            _books[id] = obj;
-            return true;
+            _books[_id] = obj;
+            return this.getById(_id);
+            // return true;
         }
         return false;
     },

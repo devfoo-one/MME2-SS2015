@@ -85,9 +85,10 @@ frisby.create('Update book')
     })
     .expectStatus(200)
     .expectJSON({
-        type: 'success',
-        statusCode: 200,
-        msg: 'update of books with id 0 successful'
+        title: "NEW TITLE",
+        author: "Andy Weir",
+        year: "2011",
+        id: 0
     })
     .after(function(err, res, body) {
         frisby.create('book got new title?')

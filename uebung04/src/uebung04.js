@@ -11,9 +11,10 @@ var data = {
 var app = express();
 var routerV1 = express.Router();
 
-routerV1.route('').get(function(req, res) {
-    errorJSON.send(new errorJSON.Error("error", 404, "no entity requested"), res);
-});
+routerV1.route('')
+    .get(function(req, res) {
+        errorJSON.send(new errorJSON.Error("error", 404, "no entity requested"), res);
+    });
 
 // route /entity
 routerV1.route('/:entity/')
@@ -22,7 +23,8 @@ routerV1.route('/:entity/')
     .get(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         if (data[entity] !== undefined) {
-            res.status(200).send(data[entity].getAll());
+            res.status(200)
+                .send(data[entity].getAll());
         } else {
             errorJSON.send(new errorJSON.Error("error", 404, "Requested entity " + entity + " not found"), res);
         }
@@ -33,8 +35,9 @@ routerV1.route('/:entity/')
         var entity = req.params.entity.toLowerCase();
         var postedObject = req.body; //bodyParser middleware automatically parses application/json posts into JSON
         var insertedObject = data[entity].push(postedObject);
-        if(insertedObject) {
-            res.status(201).json(insertedObject);
+        if (insertedObject) {
+            res.status(201)
+                .json(insertedObject);
         } else {
             errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
         }
@@ -50,7 +53,8 @@ routerV1.route('/:entity/:id')
         if (data[entity] !== undefined) {
             var requestedObject = data[entity].getById(id);
             if (requestedObject) {
-                res.status(200).send(requestedObject);
+                res.status(200)
+                    .send(requestedObject);
             } else {
                 errorJSON.send(new errorJSON.Error("error", 404, "No object with id " + id + " found within entity " + entity), res); //is this necessary?
             }
@@ -64,10 +68,16 @@ routerV1.route('/:entity/:id')
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
         var postedObject = req.body;
-        if(data[entity].update(postedObject, id)) {
-            errorJSON.send(new errorJSON.Error("success", 200, "update of " + entity + " with id " + id + " successful"), res);
+        if (data[entity].getById(id)) {
+            var updatedObject = data[entity].update(postedObject, id);
+            if (updatedObject) {
+                res.status(200)
+                    .json(updatedObject);
+            } else {
+                errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
+            }
         } else {
-            errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
+            errorJSON.send(new errorJSON.Error("error", 404, "No object with id " + id + " found within entity " + entity), res);
         }
     })
 
@@ -75,12 +85,13 @@ routerV1.route('/:entity/:id')
     .delete(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
-        if(data[entity].delete(id)) {
+        if (data[entity].delete(id)) {
             errorJSON.send(new errorJSON.Error("success", 200, "deletion of " + entity + " with id " + id + " successful"), res);
         } else {
             errorJSON.send(new errorJSON.Error("error", 400, "No object to delete with id " + id + " found within entity " + entity), res);
         }
-    });
+    }
+);
 
 // for parsing application/json
 app.use(bodyParser.json());
