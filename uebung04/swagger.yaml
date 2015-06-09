@@ -1,0 +1,133 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: MME2 Uebung 04
+  description: A simple REST API
+  version: "1.0.0"
+# the domain of the service
+host: localhost:8080
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /books:
+    get:
+      description: Gets all books.
+      responses:
+        200:
+          description: An array of books
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Book'
+    post:
+      description: Adds a new book
+      parameters:
+        - name: book
+          in: body
+          description: The new book
+          required: true
+          schema:
+            $ref: '#/definitions/Book'
+      responses:
+        201:
+          description: Book successful created
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Object not proper formatted
+          schema:
+            $ref: '#/definitions/Error'
+
+  /books/{id}:
+    get:
+      summary: Get one book
+      description: Gets one specific book.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: number
+        description: ID of book
+      responses:
+        200:
+          description: Book
+          schema:
+            $ref: '#/definitions/Book'
+        404:
+          description: Book not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Update book
+      description: Update one specific book
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: number
+        description: ID of book
+      - name: book
+        in: body
+        description: The new book
+        required: true
+        schema:
+          $ref: '#/definitions/Book'
+      responses:
+        200:
+          description: Update successful
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Object not proper formatted
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete Book
+      description: Delete one specific book
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: number
+        description: ID of book
+      responses:
+        200:
+          description: Delete successful
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: No object to delete with id
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Book:
+    properties:
+      id:
+        type: number
+        description: Unique identifier of one book.
+      title:
+        type: string
+        description: Title of the book.
+      author:
+        type: string
+        description: Author of the book.
+      year:
+        type: string
+        description: Year the book was released.
+  Error:
+    properties:
+      type:
+        type: string
+        description: Error type, i.e. "success" or "error"
+      status:
+        type: number
+        description: HTTP Status
+      msg:
+        type: string
+        description: Describes the error.
