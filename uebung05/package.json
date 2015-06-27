@@ -4,8 +4,13 @@
   "description": "Excercise 05 of the module \"Multimedia-Engineering 2\"",
   "main": "src/uebung05.js",
   "scripts": {
+    "pretest": "mkdir -p data/db && mongod --dbpath data/db --logpath data/mongolog.log --fork",
+    "prestart": "mkdir -p data/db && mongod --dbpath data/db --logpath data/mongolog.log --fork",
     "test": "jasmine-node spec/ --verbose",
-    "start": "node src/uebung05.js"
+    "start": "node src/uebung05.js",
+    "posttest": "mongo admin --eval 'db.shutdownServer()' > /dev/null && rm -r data/db",
+    "poststop": "mongo admin --eval 'db.shutdownServer()' > /dev/null && rm -r data/db",
+    "stop": "echo stopping..."
   },
   "repository": {
     "type": "git",
@@ -19,7 +24,9 @@
   "homepage": "https://github.com/devfoo-one/MME2-SS2015",
   "dependencies": {
     "body-parser": "^1.12.4",
-    "express": "^4.12.4"
+    "express": "^4.12.4",
+    "mongodb": "^2.0.35",
+    "mongojs": "^1.0.1"
   },
   "engines": {
     "node": ">=0.10.0"

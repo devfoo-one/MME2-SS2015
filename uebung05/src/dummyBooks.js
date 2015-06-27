@@ -3,17 +3,20 @@
  */
 
 var _books = [{
-    title: 'The Martian',
-    author: 'Andy Weir',
-    year: '2011'
+    name: 'Andy Weir - The Martian',
+    description: '',
+    ISBN: 'XXXXX4815',
+    state: 0
 }, {
-    title: 'Die Grube und das Pendel',
-    author: 'Edgar Allan Poe',
-    year: '1842'
+    title: 'Edgar Allan Poe - Die Grube und das Pendel',
+    description: '',
+    ISBN: 'XXXXX1623',
+    state: 0
 }, {
-    title: 'Berge des Wahnsinns',
-    author: 'H.P. Lovecraft',
-    year: '1936'
+    title: 'H.P. Lovecraft - Berge des Wahnsinns',
+    description: '',
+    ISBN: 'XXXXX4248',
+    state: 0
 }];
 
 /**
@@ -30,14 +33,12 @@ var checkObject = function(obj) {
 
 module.exports = {
     /**
-     * returns all books out of the collection
-     * @return [Books]  Array of Books
+     * populates the database with demo entries
+     * @param  mongodb db database
      */
-    getAll: function() {
-        return _books.map(function(obj, index) {
-            var rObj = obj;
-            rObj.id = index;
-            return rObj;
+    populateDb: function(db) {
+        db.books.insert(_books, function(err, res) {
+            if(err) { console.log(err); }
         });
     },
     /**

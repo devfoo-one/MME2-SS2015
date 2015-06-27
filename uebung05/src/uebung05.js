@@ -1,13 +1,16 @@
 // MME2 - Uebung 05 - Tom Oberhauser - 798158
 // this module provides a REST interface on localhost:8080/api/v1
 
+var mongojs = require('mongojs');
+var db = mongojs('mydb', ['books']);
 var express = require("express");
 var bodyParser = require('body-parser');
 var errorJSON = require("./errorJSON.js");
 var dummyBooks = require("./dummyBooks.js");
-var data = {
-    books: dummyBooks
-};
+dummyBooks.populateDb(db); //create dummy data
+// var data = {
+//     books: dummyBooks
+// }; //XXX DELETE ME
 var app = express();
 var routerV1 = express.Router();
 
@@ -22,9 +25,10 @@ routerV1.route('/:entity/')
     // route /entity GET
     .get(function(req, res) {
         var entity = req.params.entity.toLowerCase();
-        if (data[entity] !== undefined) {
-            res.status(200)
-                .send(data[entity].getAll());
+        if (entity === 'books') {
+            db.books.find(function(err, docs) {
+                res.status(200).send(docs);
+            });
         } else {
             errorJSON.send(new errorJSON.Error("error", 404, "Requested entity " + entity + " not found"), res);
         }
