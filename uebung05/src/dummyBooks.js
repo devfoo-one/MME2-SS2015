@@ -19,17 +19,6 @@ var _books = [{
     state: 0
 }];
 
-/**
- * check if an object got proper format
- * @param  Object   obj book object to check
- * @return boolean      true if proper format
- */
-var checkObject = function(obj) {
-    if (obj === null || obj === undefined) {
-        return false;
-    }
-    return obj.hasOwnProperty('title') && obj.hasOwnProperty('author') && obj.hasOwnProperty('year');
-};
 
 module.exports = {
     /**
@@ -42,19 +31,16 @@ module.exports = {
         });
     },
     /**
-     * Gets one specific book
-     * @param  Number id
-     * @return Book
+     * check if an object got proper format
+     * @param  Object   obj book object to check
+     * @return boolean      true if proper format
      */
-    getById: function(id) {
-        var _id = Number.parseInt(id);
-        var retObj = _books[_id];
-        if (retObj) {
-            retObj.id = _id;
-            return retObj;
-        } else {
+
+    checkObject: function(obj) { //TODO update me
+        if (obj === null || obj === undefined) {
             return false;
         }
+        return obj.hasOwnProperty('title') && obj.hasOwnProperty('author') && obj.hasOwnProperty('year');
     },
     /**
      * Adds a book to the collection

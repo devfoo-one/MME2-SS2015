@@ -8,11 +8,25 @@ var bodyParser = require('body-parser');
 var errorJSON = require("./errorJSON.js");
 var dummyBooks = require("./dummyBooks.js");
 dummyBooks.populateDb(db); //create dummy data
-// var data = {
-//     books: dummyBooks
-// }; //XXX DELETE ME
 var app = express();
 var routerV1 = express.Router();
+
+/**
+ * tests if an id is a valid mongodb-id
+ * @param  {String} id      id
+ * @param  {function} success callback if id is valid
+ * @param  {function} fail    callback if id is not valid
+ */
+var executeIfValidObjectId = function(id, success, fail) {
+    try {
+        mongojs.ObjectId(id);
+    } catch(e) {
+        fail();
+        return;
+    }
+    success();
+    return;
+};
 
 routerV1.route('')
     .get(function(req, res) {
@@ -35,6 +49,7 @@ routerV1.route('/:entity/')
     })
 
     // route /entity POST
+    //TODO implement me
     .post(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var postedObject = req.body; //bodyParser middleware automatically parses application/json posts into JSON
@@ -54,20 +69,27 @@ routerV1.route('/:entity/:id')
     .get(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
-        if (data[entity] !== undefined) {
-            var requestedObject = data[entity].getById(id);
-            if (requestedObject) {
-                res.status(200)
-                    .send(requestedObject);
+        var idFail = function() {
+            errorJSON.send(new errorJSON.Error("error", 400, id + " is not a valid database id!"), res);
+        };
+        var idSuccess = function() {
+            if (entity === 'books') {
+                db.books.findOne({_id: mongojs.ObjectId(id)}, function(err, docs) {
+                    if(!docs) {
+                        errorJSON.send(new errorJSON.Error("error", 404, "No object with id " + id + " found within entity " + entity), res);
+                    } else {
+                        res.status(200).send(docs);
+                    }
+                });
             } else {
-                errorJSON.send(new errorJSON.Error("error", 404, "No object with id " + id + " found within entity " + entity), res); //is this necessary?
+                errorJSON.send(new errorJSON.Error("error", 404, "Requested entity " + entity + " not found"), res);
             }
-        } else {
-            errorJSON.send(new errorJSON.Error("error", 404, "Requested entity " + entity + " not found"), res);
-        }
+        };
+        executeIfValidObjectId(id, idSuccess, idFail);
     })
 
     // route /entity/id PUT
+    // TODO implement me
     .put(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
@@ -86,6 +108,7 @@ routerV1.route('/:entity/:id')
     })
 
     // route /entity/id DELETE
+    // TODO implement me
     .delete(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
