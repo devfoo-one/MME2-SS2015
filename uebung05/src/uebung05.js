@@ -35,7 +35,7 @@ routerV1.route('')
 
 // route /entity
 routerV1.route('/:entity/')
-
+    // TODO implement search parameters (name, description, ISBN, state)
     // route /entity GET
     .get(function(req, res) {
         var entity = req.params.entity.toLowerCase();
@@ -49,16 +49,18 @@ routerV1.route('/:entity/')
     })
 
     // route /entity POST
-    //TODO implement me
     .post(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var postedObject = req.body; //bodyParser middleware automatically parses application/json posts into JSON
-        var insertedObject = data[entity].push(postedObject);
-        if (insertedObject) {
-            res.status(201)
-                .json(insertedObject);
-        } else {
-            errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
+        var checkedObject = dummyBooks.checkObject(postedObject);
+        if (entity === 'books') {
+            if (checkedObject !== null) {
+                db.books.insert(checkedObject, function(err, docs) {
+                    res.status(201).json(docs);
+                });
+            } else {
+                errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
+            }
         }
     });
 
@@ -66,6 +68,7 @@ routerV1.route('/:entity/')
 routerV1.route('/:entity/:id')
 
     // route /entity/id GET
+    // TODO add pagination
     .get(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;

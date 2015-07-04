@@ -1,3 +1,5 @@
+_ = require("underscore");
+
 /**
  * book dummy data
  */
@@ -33,26 +35,40 @@ module.exports = {
     /**
      * check if an object got proper format
      * @param  Object   obj book object to check
-     * @return boolean      true if proper format
+     * @return Object   book if proper formatted, null if not
+     */
+    /*
+    NOTE maybe check the object for small errors (like no status) and return a corrected one, but if heavy errors occur (like no title) return false.
      */
 
+    /*
+    NOTE: name(String, required)
+    description(String, optinal)
+    ISBN(String, required)
+    state(int, optional default 0)
+     */
     checkObject: function(obj) { //TODO update me
         if (obj === null || obj === undefined) {
-            return false;
+            return null;
         }
-        return obj.hasOwnProperty('title') && obj.hasOwnProperty('author') && obj.hasOwnProperty('year');
-    },
-    /**
-     * Adds a book to the collection
-     * @param  Book             obj
-     * @return Book   Book if inserted, false if error
-     */
-    push: function(obj) {
-        if (checkObject(obj)) {
-            _books.push(obj);
-            return this.getById(_books.length - 1);
+        obj = _.pick(obj, 'name', 'description', 'ISBN', 'state');
+        if(_.has(obj, 'state') && !_.isNumber(obj.state)) { //if state is no number, convert!
+            obj.state = 0;
         }
-        return false;
+        obj = _.defaults(obj, {state: 0}); //if no state is given, set default state of 0
+        if(_.has(obj, 'description') && !_.isString(obj.description)) { //if description is no string, convert!
+            obj.description = String(obj.description);
+        }
+
+        if(
+            _.has(obj, 'name') &&
+            typeof obj.name === "string" &&
+            _.has(obj, 'ISBN') &&
+            typeof obj.ISBN === "string")
+            {
+                return obj;
+            }
+            return null;
     },
     /**
      * Updates one specific book
