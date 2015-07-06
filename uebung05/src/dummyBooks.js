@@ -37,7 +37,7 @@ module.exports = {
      * @param  Object   obj book object to check
      * @return Object   book if proper formatted, null if not
      */
-    checkObject: function(obj) { 
+    checkObject: function(obj) {
         if (obj === null || obj === undefined) {
             return null;
         }
@@ -50,15 +50,10 @@ module.exports = {
             obj.description = String(obj.description);
         }
 
-        if(
-            _.has(obj, 'name') &&
-            typeof obj.name === "string" &&
-            _.has(obj, 'ISBN') &&
-            typeof obj.ISBN === "string")
-            {
-                return obj;
-            }
-            return null;
+        if (_.has(obj, 'name') && _.isString(obj.name) && _.has(obj, 'ISBN') && _.isString(obj.ISBN)) {
+            return obj;
+        }
+        return null;
     },
     /**
      * Updates one specific book
