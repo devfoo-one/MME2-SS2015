@@ -4,6 +4,7 @@
 var mongojs = require('mongojs');
 var db = mongojs('mydb', ['books']);
 var express = require("express");
+var basicAuth = require('basic-auth');
 var bodyParser = require('body-parser');
 var errorJSON = require("./errorJSON.js");
 var _ = require("underscore");
@@ -43,6 +44,7 @@ routerV1.route('/:entity/')
         var paginationLimit = Number(_.defaults(_.pick(req.query, 'limit'), {limit: 0}).limit);
         var paginationSkip = Number(_.defaults(_.pick(req.query, 'skip'), {skip: 0}).skip);
         // get query parameters for wildcard search
+        // http://www.ivanbreet.com/blog-item/using-variables-regex-mongodb-query-nodejs
         var queryWildcard = _.mapObject(_.pick(req.query,'name', 'description', 'ISBN'), function(val, key){
             return new RegExp(val, 'i');
         });
@@ -152,7 +154,7 @@ routerV1.route('/:entity/:id')
                     if(n === 1) {
                         db.books.remove({_id: mongojs.ObjectId(id)}, function(err, state) {
                             if(!err && state.ok === 1) {
-                                errorJSON.send(new errorJSON.Error("success", 200, "deletion of " + entity + " with id " + id + " successful"), res);
+                                errorJSON.send(new errorJSON.Error("success", 204, "deletion of " + entity + " with id " + id + " successful"), res);
                             } else {
                                 console.log(err);
                             }
@@ -171,6 +173,31 @@ routerV1.route('/:entity/:id')
 
 // for parsing application/json
 app.use(bodyParser.json());
+
+/**
+ * Simple basic auth middleware for use with Express 4.x.
+ * http://www.danielstjules.com/2014/08/03/basic-auth-with-express-4/
+ *
+ * @example
+ * app.use('/api-requiring-auth', utils.basicAuth('username', 'password'));
+ *
+ * @param   {string}   username Expected username
+ * @param   {string}   password Expected password
+ * @returns {function} Express 4 middleware requiring the given credentials
+ */
+var basicAuthMiddleware = function(username, password) {
+  return function(req, res, next) {
+    var user = basicAuth(req);
+    if (!user || user.name !== username || user.pass !== password) {
+      res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
+      return res.sendStatus(401);
+    }
+    next();
+  };
+};
+
+//connect basic auth middleware
+app.use('/api/v1', basicAuthMiddleware('top', 'secret'));
 
 //connect router middleware
 app.use('/api/v1', routerV1);
