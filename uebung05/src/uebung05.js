@@ -109,17 +109,34 @@ routerV1.route('/:entity/:id')
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
         var postedObject = req.body;
-        if (data[entity].getById(id)) {
-            var updatedObject = data[entity].update(postedObject, id);
-            if (updatedObject) {
-                res.status(200)
-                    .json(updatedObject);
+        var checkedObject = dummyBooks.checkObject(postedObject);
+        var idFail = function() {
+            errorJSON.send(new errorJSON.Error("error", 400, id + " is not a valid database id!"), res);
+        };
+        var idSuccess = function() {
+            if (entity === 'books') {
+                // check if id is in database
+                db.books.count({_id: mongojs.ObjectId(id)}, function(err, n) {
+                    if(n === 1) {
+                        if (checkedObject !== null) {
+                            db.books.update({_id: mongojs.ObjectId(id)}, checkedObject, function() {
+                                // show updated object
+                                db.books.findOne({_id: mongojs.ObjectId(id)}, function(err, docs) {
+                                    res.status(201).send(docs);
+                                });
+                            });
+                        } else {
+                            errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
+                        }
+                    } else {
+                        errorJSON.send(new errorJSON.Error("error", 404, "No object with id " + id + " found within entity " + entity), res);
+                    }
+                });
             } else {
-                errorJSON.send(new errorJSON.Error("error", 400, "pushed object is not proper formatted!"), res);
+                errorJSON.send(new errorJSON.Error("error", 404, "Requested entity " + entity + " not found"), res);
             }
-        } else {
-            errorJSON.send(new errorJSON.Error("error", 404, "No object with id " + id + " found within entity " + entity), res);
-        }
+        };
+        executeIfValidObjectId(id, idSuccess, idFail);
     })
 
     // route /entity/id DELETE

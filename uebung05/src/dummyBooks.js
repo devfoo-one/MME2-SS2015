@@ -49,26 +49,10 @@ module.exports = {
         if(_.has(obj, 'description') && !_.isString(obj.description)) { //if description is no string, convert!
             obj.description = String(obj.description);
         }
-
         if (_.has(obj, 'name') && _.isString(obj.name) && _.has(obj, 'ISBN') && _.isString(obj.ISBN)) {
             return obj;
         }
         return null;
-    },
-    /**
-     * Updates one specific book
-     * @param  Book obj
-     * @param  Number id
-     * @return BookBoolean  success?
-     */
-    update: function(obj, id) {
-        var _id = Number.parseInt(id);
-        if (checkObject(obj)) {
-            _books[_id] = obj;
-            return this.getById(_id);
-            // return true;
-        }
-        return false;
     },
     /**
      * Deletes one specific book
