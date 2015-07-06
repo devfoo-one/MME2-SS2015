@@ -10,12 +10,12 @@ var _books = [{
     ISBN: 'XXXXX4815',
     state: 0
 }, {
-    title: 'Edgar Allan Poe - Die Grube und das Pendel',
+    name: 'Edgar Allan Poe - Die Grube und das Pendel',
     description: '',
     ISBN: 'XXXXX1623',
     state: 0
 }, {
-    title: 'H.P. Lovecraft - Berge des Wahnsinns',
+    name: 'H.P. Lovecraft - Berge des Wahnsinns',
     description: '',
     ISBN: 'XXXXX4248',
     state: 0
@@ -37,17 +37,7 @@ module.exports = {
      * @param  Object   obj book object to check
      * @return Object   book if proper formatted, null if not
      */
-    /*
-    NOTE maybe check the object for small errors (like no status) and return a corrected one, but if heavy errors occur (like no title) return false.
-     */
-
-    /*
-    NOTE: name(String, required)
-    description(String, optinal)
-    ISBN(String, required)
-    state(int, optional default 0)
-     */
-    checkObject: function(obj) { //TODO update me
+    checkObject: function(obj) { 
         if (obj === null || obj === undefined) {
             return null;
         }
