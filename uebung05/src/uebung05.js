@@ -104,7 +104,6 @@ routerV1.route('/:entity/:id')
     })
 
     // route /entity/id PUT
-    // TODO implement me
     .put(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
@@ -140,15 +139,33 @@ routerV1.route('/:entity/:id')
     })
 
     // route /entity/id DELETE
-    // TODO implement me
     .delete(function(req, res) {
         var entity = req.params.entity.toLowerCase();
         var id = req.params.id;
-        if (data[entity].delete(id)) {
-            errorJSON.send(new errorJSON.Error("success", 200, "deletion of " + entity + " with id " + id + " successful"), res);
-        } else {
-            errorJSON.send(new errorJSON.Error("error", 400, "No object to delete with id " + id + " found within entity " + entity), res);
-        }
+        var idFail = function() {
+            errorJSON.send(new errorJSON.Error("error", 400, id + " is not a valid database id!"), res);
+        };
+        var idSuccess = function() {
+            if (entity === 'books') {
+                // check if id is in database
+                db.books.count({_id: mongojs.ObjectId(id)}, function(err, n) {
+                    if(n === 1) {
+                        db.books.remove({_id: mongojs.ObjectId(id)}, function(err, state) {
+                            if(!err && state.ok === 1) {
+                                errorJSON.send(new errorJSON.Error("success", 200, "deletion of " + entity + " with id " + id + " successful"), res);
+                            } else {
+                                console.log(err);
+                            }
+                        });
+                    } else {
+                        errorJSON.send(new errorJSON.Error("error", 404, "No object with id " + id + " found within entity " + entity), res);
+                    }
+                });
+            } else {
+                errorJSON.send(new errorJSON.Error("error", 404, "Requested entity " + entity + " not found"), res);
+            }
+        };
+        executeIfValidObjectId(id, idSuccess, idFail);
     }
 );
 
