@@ -154,7 +154,7 @@ routerV1.route('/:entity/:id')
                     if(n === 1) {
                         db.books.remove({_id: mongojs.ObjectId(id)}, function(err, state) {
                             if(!err && state.ok === 1) {
-                                errorJSON.send(new errorJSON.Error("success", 204, "deletion of " + entity + " with id " + id + " successful"), res);
+                                res.sendStatus(204);
                             } else {
                                 console.log(err);
                             }
