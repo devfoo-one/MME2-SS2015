@@ -53,17 +53,5 @@ module.exports = {
             return obj;
         }
         return null;
-    },
-    /**
-     * Deletes one specific book
-     * @param  Number id
-     * @return Boolean  success?
-     */
-    delete: function(id) {
-        if (_books[id] !== undefined) {
-            _books.splice(id, 1);
-            return true;
-        }
-        return false;
     }
 };
