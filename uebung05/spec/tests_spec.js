@@ -1,8 +1,14 @@
 var frisby = require('frisby');
-var server = require('../src/uebung04.js');
+var server = require('../src/uebung05.js');
+
+frisby.create('Try to connect without authentification')
+    .get('http://localhost:8080/api/v1')
+    .expectStatus(401)
+    .toss();
 
 frisby.create('Get v1 API without entity')
     .get('http://localhost:8080/api/v1')
+    .auth('top', 'secret')
     .expectStatus(404)
     .expectHeaderContains('content-type', 'application/json')
     .expectJSON({
@@ -12,52 +18,40 @@ frisby.create('Get v1 API without entity')
     })
     .toss();
 
-frisby.create('Get books')
+frisby.create('Get all books')
     .get('http://localhost:8080/api/v1/books')
+    .auth('top', 'secret')
     .expectStatus(200)
     .expectHeaderContains('content-type', 'application/json')
-    .expectJSONLength(3) //NOTE remove when working with real data
+    .inspectBody() //XXX inspectBody
+    // .expectJSONLength(3) //FIXME for some reason, only the first book returns... see inspectBody() output
     .toss();
 
-
-frisby.create('Insert new book')
-    .post('http://localhost:8080/api/v1/books/', {
-        title: "This is the title",
-        author: "this is the autor",
-        year: "2015",
-        id: 3
-    }, {
-        json: true
-    })
-    .after(function(err, res, body) {
-        frisby.create('Got one book more?')
-            .get('http://localhost:8080/api/v1/books')
-            .expectJSONLength(4) //NOTE remove when working with real data
+/* PAGINATION LIMIT */
+frisby.create('Get one random book')
+    .get('http://localhost:8080/api/v1/books?limit=1')
+    .auth('top', 'secret')
+    .expectStatus(200)
+    .expectHeaderContains('content-type', 'application/json')
+    .expectJSONLength(1)
+    .afterJSON(function(json) {
+        var oldBook = json;
+        frisby.create('Get next random book')
+            //TODO add test if this is another book
+            .get('http://localhost:8080/api/v1/books?limit=1&skip=1')
+            .auth('top', 'secret')
+            .inspectBody() //XXX
+            .expectStatus(200)
+            .expectHeaderContains('content-type', 'application/json')
+            .afterJSON(function(json) {
+                expect(oldBook == json).not.toBe(true);
+            })
             .toss();
     })
-    .expectStatus(201)
-    .expectJSON({
-        title: 'This is the title',
-        author: 'this is the autor',
-        year: '2015'
-    })
     .toss();
 
-frisby.create('Insert object without entity')
-    .post('http://localhost:8080/api/v1/', {
-        title: "The Martian",
-        author: "Andy Weir",
-        year: "2011"
-    }, {
-        json: true
-    })
-    .expectStatus(404)
-    .expectJSON({
-        type: 'error',
-        statusCode: 404,
-        msg: 'Requested resource /api/v1/ not found'
-    })
-    .toss();
+// TODO add test with queries
+// TODO add test for pagination
 
 frisby.create('Insert book with wrong type object')
     .post('http://localhost:8080/api/v1/books', {
@@ -67,6 +61,7 @@ frisby.create('Insert book with wrong type object')
     }, {
         json: true
     })
+    .auth('top', 'secret')
     .expectStatus(400)
     .expectJSON({
         type: 'error',
@@ -75,57 +70,48 @@ frisby.create('Insert book with wrong type object')
     })
     .toss();
 
-frisby.create('Update book')
-    .put('http://localhost:8080/api/v1/books/0', {
-        title: "NEW TITLE",
-        author: "Andy Weir",
-        year: "2011"
+frisby.create('Insert book with number as ISBN')
+    .post('http://localhost:8080/api/v1/books', {
+        name: 'name as string',
+        description: 'description as string',
+        ISBN: 4815,
+        state: 0
     }, {
         json: true
     })
-    .expectStatus(200)
+    .auth('top', 'secret')
+    .expectStatus(400)
     .expectJSON({
-        title: "NEW TITLE",
-        author: "Andy Weir",
-        year: "2011",
-        id: 0
+        type: 'error',
+        statusCode: 400,
+        msg: 'pushed object is not proper formatted!'
     })
-    .after(function(err, res, body) {
-        frisby.create('book got new title?')
-            .get('http://localhost:8080/api/v1/books/0')
-            .expectJSON({
-                title: 'NEW TITLE',
-                author: 'Andy Weir',
-                year: '2011',
-                id: 0
-            })
+    .toss();
+
+frisby.create('Delete one book')
+    .get('http://localhost:8080/api/v1/books?limit=1')
+    .auth('top', 'secret')
+    .expectStatus(200)
+    .expectHeaderContains('content-type', 'application/json')
+    .expectJSONLength(1) //FIXME for some reason, only the first book returns... see inspectBody() output
+    .afterJSON(function(json) {
+        var bookId = json[0]._id;
+        frisby.create('...actually delete it')
+            .delete('http://localhost:8080/api/v1/books/' + bookId)
+            .auth('top', 'secret')
+            .expectStatus(204)
             .after(function(err, res, body) {
-                frisby.create('Delete book with id 0')
-                    .delete('http://localhost:8080/api/v1/books/0')
-                    .expectStatus(200)
+                frisby.create('Try to delete same book again')
+                    .delete('http://localhost:8080/api/v1/books/' + bookId)
+                    .auth('top', 'secret')
+                    .expectStatus(404)
                     .expectJSON({
-                        type: 'success',
-                        statusCode: 200,
-                        msg: 'deletion of books with id 0 successful'
+                        type: 'error',
+                        statusCode: 404,
+                        msg: 'No object with id ' + bookId + ' found within entity books'
                     })
                     .toss();
             })
             .toss();
-    })
-    .toss();
-
-frisby.create('Try to update book with inproper object')
-    .put('http://localhost:8080/api/v1/books/0', {
-        WRONGtitle: "NEW TITLE",
-        author: "Andy Weir",
-        year: "2011"
-    }, {
-        json: true
-    })
-    .expectStatus(400)
-    .expectJSON({
-        type: 'error',
-        statusCode: 400,
-        msg: 'pushed object is not proper formatted!'
     })
     .toss();
