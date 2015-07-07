@@ -23,7 +23,7 @@ frisby.create('Get all books')
     .auth('top', 'secret')
     .expectStatus(200)
     .expectHeaderContains('content-type', 'application/json')
-    .inspectBody() //XXX inspectBody
+    // .inspectBody() //XXX inspectBody
     // .expectJSONLength(3) //FIXME for some reason, only the first book returns... see inspectBody() output
     .toss();
 
@@ -37,21 +37,26 @@ frisby.create('Get one random book')
     .afterJSON(function(json) {
         var oldBook = json;
         frisby.create('Get next random book')
-            //TODO add test if this is another book
             .get('http://localhost:8080/api/v1/books?limit=1&skip=1')
             .auth('top', 'secret')
-            .inspectBody() //XXX
             .expectStatus(200)
             .expectHeaderContains('content-type', 'application/json')
             .afterJSON(function(json) {
-                expect(oldBook == json).not.toBe(true);
+                expect(oldBook).not.toBe(json);
             })
             .toss();
     })
     .toss();
 
-// TODO add test with queries
-// TODO add test for pagination
+frisby.create('Get all books with state 0')
+    .get('http://localhost:8080/api/v1/books?state=0')
+    .auth('top', 'secret')
+    .expectStatus(200)
+    .expectHeaderContains('content-type', 'application/json')
+    .expectJSON('*', {
+        state: 0 //expect all objects to have state of 0
+    })
+    .toss();
 
 frisby.create('Insert book with wrong type object')
     .post('http://localhost:8080/api/v1/books', {
@@ -93,7 +98,7 @@ frisby.create('Delete one book')
     .auth('top', 'secret')
     .expectStatus(200)
     .expectHeaderContains('content-type', 'application/json')
-    .expectJSONLength(1) //FIXME for some reason, only the first book returns... see inspectBody() output
+    .expectJSONLength(1)
     .afterJSON(function(json) {
         var bookId = json[0]._id;
         frisby.create('...actually delete it')
